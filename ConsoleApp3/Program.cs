@@ -1,19 +1,52 @@
 ﻿using System.Dynamic;
 using System.Runtime.InteropServices;
 using System.Security.Cryptography;
-
+using System.Text;
+using System.Threading.Tasks.Dataflow;
 
 public class Program
 {
     public static void Main()
     {
+        NotAList notAList = new NotAList();
+        notAList.Add(3);
+        notAList.Add(5);
+        notAList.Add(3);
+        notAList.Add(5);
+        notAList.Add(37);
+
+        notAList.Remove(3);
+
+        for (int i = 0; i < notAList.Count; i++)
+        {
+            Console.Write(" " + notAList.GetItem(i));
+        }
+        Console.WriteLine();
+
         Console.WriteLine("found Indexes");
-        int[] ints = FindAll(new object[] { 4, "cock", 1, 0xFF, "cock", "cock", "cock" }, "cock");
+        int[] ints = FindAll(new object[] { 
+            4,
+            "hahn",
+            1, 
+            0xFF, 
+            "hahn", 
+            new List<int>(),
+            "hahn", 
+            "zwölf", 
+            new StringBuilder(), 
+            0.23f,
+            "hahn"
+        },
+        "hahn"
+        );
+
         for (int i = 0; i < ints.Length; i++)
         {
             Console.WriteLine(ints[i]);
         }
         Console.WriteLine("End Indexes");
+
+
 
 
         object[] arr = new object[] { 1, "cock", 0b10101011, 0xFFF12, 0 };
@@ -107,17 +140,25 @@ public class Program
             if (obj[i] == value) indexes.Add(i);
         }
 
-        int[] result = new int[indexes.Count()];
-        for (int i = 0; i < result.Length; i++)
+        int[] result = new int[indexes.Count];
+        for (int i = 0; i < indexes.Count; i++)
         {
             result[i] = (int)indexes.GetItem(i);
         }
-
         return result;
     }
 
     public class NotAList
     {
+        object[] items;
+        public int Count
+        {
+            get 
+            {
+                return GetCount();
+            }
+        }
+
         public NotAList(uint startItems = 16)
         {
             if (startItems < 1) throw new Exception("Cannot be initialized with value smaller than 1");
@@ -130,9 +171,63 @@ public class Program
             }
         }
 
-        object[] items;
+        public void RemoveAt(int index)
+        {
+            items = RemoveFromArray(items, index);
+        }
 
-        public int Count()
+        public void Remove(object item, RemoveMode mode = RemoveMode.All)
+        {
+            for (int i = 0; i < items.Length; i++)
+            {
+                if (items[i].Equals(item) || items[i] == item)
+                {
+                    items = RemoveFromArray(items, i);
+                    i--;
+
+                    if (mode == RemoveMode.FirstInstance) return;
+                }
+            }
+        }
+
+        public enum RemoveMode
+        {
+            All = 0,
+            FirstInstance = 1
+        }
+
+        private static object[] RemoveFromArray(object[] arr, int index)
+        {
+            if (index >= arr.Length) throw new Exception("index was higher than arr length");
+
+            object[] newArr = new object[arr.Length - 1];
+
+            int j = 0;
+            for (int i = 0; i < arr.Length; i++)
+            {
+                if (i == index) continue;
+                else
+                {
+                    newArr[j] = arr[i];
+                    j++;
+                }
+            }
+
+            return newArr;
+        }
+
+
+        public object[] ToArray()
+        {
+            object[] arr = new object[items.Length];
+            for (int i = 0; i < arr.Length; i++)
+            {
+                arr[i] = items[i];
+            }
+            return arr;
+        }
+
+        private int GetCount()
         {
             int count = 0;
             for (int i = 0; i < items.Length; i++)
