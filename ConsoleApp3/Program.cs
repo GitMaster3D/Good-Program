@@ -118,7 +118,7 @@ public class Program
 
     public class NotAList
     {
-        public NotAList(int startItems = 16)
+        public NotAList(uint startItems = 16)
         {
             if (startItems < 1) throw new Exception("Cannot be initialized with value smaller than 1");
 
@@ -183,7 +183,6 @@ public class Program
 
             items = items_;
             Add(item);
-
         }
 
         private struct Empty
