@@ -171,6 +171,13 @@ public class Program
             }
         }
         private int position = -1;
+        public object Current
+        {
+            get
+            {
+                return items[position];
+            }
+        }
 
         public bool MoveNext()
         {
@@ -181,14 +188,6 @@ public class Program
         public void Reset()
         {
             position = -1;
-        }
-
-        public object Current
-        {
-            get
-            {
-                return items[position];
-            }
         }
 
         public IEnumerator GetEnumerator()
