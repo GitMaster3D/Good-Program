@@ -11,31 +11,8 @@ public class Program
 {
     public static void Main()
     {
-        NotAList notAList = new NotAList(100);
-        for (int i = 0; i < 10; i++)
-        {
-            notAList.Add(15);
-        }
-
-
-
-        foreach ( var v in notAList)
-        {
-            Console.WriteLine(v);
-        }
 
         Console.WriteLine();
-
-
-        notAList.Remove(5, NotAList.RemoveBy.Refrence);
-
-        for (int i = 0; i < notAList.Count; i++)
-        {
-            Console.WriteLine(notAList[i]);
-        }
-        Console.WriteLine();
-        Console.WriteLine();
-
 
         Console.WriteLine("found Indexes");
         int[] ints = FindAll(new object[] { 
@@ -60,7 +37,6 @@ public class Program
             Console.WriteLine(ints[i]);
         }
         Console.WriteLine("End Indexes");
-
 
 
 
@@ -148,7 +124,7 @@ public class Program
 
     public static int[] FindAll(object[] obj, object value)
     {
-        NotAList indexes = new NotAList();
+        NotAList<int> indexes = new NotAList<int>();
 
         for (int i = 0; i < obj.Length; i++)
         {
@@ -163,7 +139,7 @@ public class Program
         return result;
     }
 
-    public class NotAList : IEnumerable, IEnumerator
+    public class NotAList<T> : IEnumerable, IEnumerator
     {
         object[] items;
         public uint Count
@@ -336,6 +312,9 @@ public class Program
 
         public void Add(object item)
         {
+            if (!(item is T)) throw new Exception("Wrong type!");
+
+
             for (int i = 0; i < items.Length; i++)
             {
                 if (items[i] is Empty)
