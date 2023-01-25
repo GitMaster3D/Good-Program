@@ -1,4 +1,6 @@
-﻿using System.Dynamic;
+﻿//#define DEBUGLIST
+
+using System.Dynamic;
 using System.Runtime.InteropServices;
 using System.Security.Cryptography;
 using System.Text;
@@ -9,19 +11,26 @@ public class Program
     public static void Main()
     {
         NotAList notAList = new NotAList();
-        notAList.Add(3);
-        notAList.Add(5);
-        notAList.Add(3);
-        notAList.Add(5);
-        notAList.Add(37);
-
-        notAList.Remove(3);
+        object A = 5;
+        notAList.Add(A);
+        notAList.Add(7);
 
         for (int i = 0; i < notAList.Count; i++)
         {
-            Console.Write(" " + notAList.GetItem(i));
+            Console.WriteLine(notAList[i]);
         }
         Console.WriteLine();
+
+
+        notAList.Remove(5, NotAList.RemoveBy.Refrence);
+
+        for (int i = 0; i < notAList.Count; i++)
+        {
+            Console.WriteLine(notAList[i]);
+        }
+        Console.WriteLine();
+        Console.WriteLine();
+
 
         Console.WriteLine("found Indexes");
         int[] ints = FindAll(new object[] { 
@@ -35,7 +44,8 @@ public class Program
             "zwölf", 
             new StringBuilder(), 
             0.23f,
-            "hahn"
+            "hahn",
+            0b10011101
         },
         "hahn"
         );
@@ -49,7 +59,7 @@ public class Program
 
 
 
-        object[] arr = new object[] { 1, "cock", 0b10101011, 0xFFF12, 0 };
+        object[] arr = new object[] { 1, "llllll", 0b10101011, 0xFFF12, 0 };
         ChangeArrayValue(ref arr, 2, new Exception("Lidl"));
         ChangeArrayValue(ref arr, arr.Length - 1, ContainsValue(arr, 0));
 
@@ -143,7 +153,7 @@ public class Program
         int[] result = new int[indexes.Count];
         for (int i = 0; i < indexes.Count; i++)
         {
-            result[i] = (int)indexes.GetItem(i);
+            result[i] = (int)indexes[i];
         }
         return result;
     }
@@ -159,6 +169,12 @@ public class Program
             }
         }
 
+        public object this[int index]
+        {
+            get => GetItem(index);
+            set => SetItem(index, value);
+        }
+
         public NotAList(uint startItems = 16)
         {
             if (startItems < 1) throw new Exception("Cannot be initialized with value smaller than 1");
@@ -171,16 +187,34 @@ public class Program
             }
         }
 
+        public void Flush(int startSize = 16)
+        {
+            items = new object[startSize];
+        }
+
         public void RemoveAt(int index)
         {
             items = RemoveFromArray(items, index);
         }
 
-        public void Remove(object item, RemoveMode mode = RemoveMode.All)
+        public void Remove(object item, RemoveBy removeBy = RemoveBy.Refrence, RemoveMode mode = RemoveMode.All)
         {
             for (int i = 0; i < items.Length; i++)
             {
-                if (items[i].Equals(item) || items[i] == item)
+#if DEBUGLIST
+                Console.WriteLine("Valuecheck " + items[i].Equals(item));
+                Console.WriteLine("Valuecheck as int " + Convert.ToInt32(items[i].Equals(item)));
+                Console.WriteLine("Removemode " + (int)removeBy);
+                Console.WriteLine("Final Valuecheck " + (((Convert.ToInt32(items[i].Equals(item)) & (int)removeBy)) == 1));
+
+                Console.WriteLine("RefrenceCheck " + Convert.ToInt32((items[i] == item)));
+                Console.WriteLine("added Remove mode " + Convert.ToString(((int)removeBy) & (0b00000100)));
+                Console.WriteLine("Final refrencecheck " + ((Convert.ToInt32((items[i] == item)) + ((int)removeBy & 0b00000100)) == 5));
+                Console.WriteLine();
+                Console.WriteLine();
+#endif
+                if ((((Convert.ToInt32(items[i].Equals(item)) & (int)removeBy)) == 1) //Check by value
+                    || (Convert.ToInt32(items[i] == item) + ((int)removeBy & 0b00000100)) == 5) //Check by refrence
                 {
                     items = RemoveFromArray(items, i);
                     i--;
@@ -194,6 +228,12 @@ public class Program
         {
             All = 0,
             FirstInstance = 1
+        }
+
+        public enum RemoveBy
+        {
+            Value = 0b00000001,
+            Refrence = 0b00000100
         }
 
         private static object[] RemoveFromArray(object[] arr, int index)
@@ -241,7 +281,17 @@ public class Program
             return count;
         }
 
-        public object GetItem(int index)
+        private void SetItem(int index, object item)
+        {
+            if (index < Count)
+            {
+                items[index] = item;
+                return;
+            }
+            throw new Exception("Index out of bounds");
+        }
+
+        private object GetItem(int index)
         {
             if (!(items[index] is Empty))
             {
