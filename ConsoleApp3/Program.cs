@@ -166,13 +166,14 @@ public class Program
     public class NotAList : IEnumerable, IEnumerator
     {
         object[] items;
-        public int Count
+        public uint Count
         {
             get 
             {
                 return GetCount();
             }
         }
+
         private int position = -1;
         public object Current
         {
@@ -223,6 +224,8 @@ public class Program
 
         public void RemoveAt(int index)
         {
+            if (index >= Count) throw new Exception("Index out of bounds");
+
             items = RemoveFromArray(items, index);
         }
 
@@ -250,10 +253,8 @@ public class Program
 
                     if (mode == RemoveMode.FirstInstance) return;
                 }
-
             }
         }
-
 
         public enum RemoveMode
         {
@@ -297,9 +298,9 @@ public class Program
             return arr;
         }
 
-        private int GetCount()
+        private uint GetCount()
         {
-            int count = 0;
+            uint count = 0;
             for (int i = 0; i < items.Length; i++)
             {
                 if (items[i] is Empty)
