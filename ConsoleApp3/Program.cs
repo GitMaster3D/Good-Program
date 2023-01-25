@@ -16,10 +16,11 @@ public class Program
         notAList.Add(A);
         notAList.Add(7);
 
-        for (int i = 0; i < notAList.Count; i++)
+        foreach ( var v in notAList)
         {
-            Console.WriteLine(notAList[i]);
+            Console.WriteLine(v);
         }
+
         Console.WriteLine();
 
 
@@ -159,7 +160,7 @@ public class Program
         return result;
     }
 
-    public class NotAList
+    public class NotAList : IEnumerable, IEnumerator
     {
         object[] items;
         public int Count
@@ -168,6 +169,31 @@ public class Program
             {
                 return GetCount();
             }
+        }
+        private int position = -1;
+
+        public bool MoveNext()
+        {
+            position++;
+            return position < Count;
+        }
+
+        public void Reset()
+        {
+            position = -1;
+        }
+
+        public object Current
+        {
+            get
+            {
+                return items[position];
+            }
+        }
+
+        public IEnumerator GetEnumerator()
+        {
+            return (IEnumerator)this;
         }
 
         public object this[int index]
