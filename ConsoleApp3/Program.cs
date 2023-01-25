@@ -11,10 +11,13 @@ public class Program
 {
     public static void Main()
     {
-        NotAList notAList = new NotAList();
-        object A = 5;
-        notAList.Add(A);
-        notAList.Add(7);
+        NotAList notAList = new NotAList(100);
+        for (int i = 0; i < 10; i++)
+        {
+            notAList.Add(15);
+        }
+
+
 
         foreach ( var v in notAList)
         {
@@ -247,8 +250,10 @@ public class Program
 
                     if (mode == RemoveMode.FirstInstance) return;
                 }
+
             }
         }
+
 
         public enum RemoveMode
         {
