@@ -11,6 +11,13 @@ public class Program
 {
     public static void Main()
     {
+        NotAList<int> definetlyNoList = new();
+        definetlyNoList.AddRange(new int[] { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 });
+        definetlyNoList.Remove(7, NotAList<int>.RemoveBy.Value, NotAList<int>.RemoveMode.FirstInstance);
+
+        Print(definetlyNoList);
+
+
         Console.WriteLine("found Indexes");
         int[] ints = FindAll(new object[] { 
             4,
@@ -97,6 +104,14 @@ public class Program
         }
 
         Console.ReadKey();
+    }
+
+    public static void Print(IEnumerable objects)
+    {
+        foreach(var obj in objects)
+        {
+            Console.WriteLine(obj);
+        }
     }
 
     public static object[] RemoveFromArray(object[] arr, int index)
@@ -406,8 +421,6 @@ public class Program
     {
         return new int[10];
     }
-
-
 
     public static List<List<int>> large;
     public static unsafe void ManyExceptions()
