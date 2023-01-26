@@ -10,9 +10,7 @@ using System.Threading.Tasks.Dataflow;
 public class Program
 {
     public static void Main()
-    {
-
-        Console.WriteLine();
+    {;
 
         Console.WriteLine("found Indexes");
         int[] ints = FindAll(new object[] { 
@@ -175,9 +173,9 @@ public class Program
             return (IEnumerator)this;
         }
 
-        public object this[int index]
+        public T this[int index]
         {
-            get => GetItem(index);
+            get => (T)GetItem(index);
             set => SetItem(index, value);
         }
 
@@ -205,7 +203,7 @@ public class Program
             items = RemoveFromArray(items, index);
         }
 
-        public void Remove(object item, RemoveBy removeBy = RemoveBy.Refrence, RemoveMode mode = RemoveMode.All)
+        public void Remove(T item, RemoveBy removeBy = RemoveBy.Refrence, RemoveMode mode = RemoveMode.All)
         {
             for (int i = 0; i < items.Length; i++)
             {
@@ -221,8 +219,10 @@ public class Program
                 Console.WriteLine();
                 Console.WriteLine();
 #endif
+                if (!(item is T)) throw new Exception("Wron Type!");
+
                 if ((((Convert.ToInt32(items[i].Equals(item)) & (int)removeBy)) == 1) //Check by value
-                    || (Convert.ToInt32(items[i] == item) + ((int)removeBy & 0b00000100)) == 5) //Check by refrence
+                    || (Convert.ToInt32((object)items[i] == (object)item) + ((int)removeBy & 0b00000100)) == 5) //Check by refrence
                 {
                     items = RemoveFromArray(items, i);
                     i--;
@@ -264,12 +264,12 @@ public class Program
             return newArr;
         }
 
-        public object[] ToArray()
+        public T[] ToArray()
         {
-            object[] arr = new object[items.Length];
+            T[] arr = new T[items.Length];
             for (int i = 0; i < arr.Length; i++)
             {
-                arr[i] = items[i];
+                arr[i] = (T)items[i];
             }
             return arr;
         }
@@ -288,11 +288,11 @@ public class Program
             return count;
         }
 
-        private void SetItem(int index, object item)
+        private void SetItem(int index, T item)
         {
             if (index < Count)
             {
-                items[index] = item;
+                items[index] = (object)item;
                 return;
             }
             throw new Exception("Index out of bounds");
@@ -310,11 +310,8 @@ public class Program
             }
         }
 
-        public void Add(object item)
+        public void Add(T item)
         {
-            if (!(item is T)) throw new Exception("Wrong type!");
-
-
             for (int i = 0; i < items.Length; i++)
             {
                 if (items[i] is Empty)
@@ -338,6 +335,14 @@ public class Program
 
             items = items_;
             Add(item);
+        }
+
+        public void AddRange(T[] items)
+        {
+            for (int i = 0; i < items.Length; i++)
+            {
+                Add(items[i]);
+            }
         }
 
         private struct Empty
