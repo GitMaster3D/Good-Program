@@ -10,8 +10,7 @@ using System.Threading.Tasks.Dataflow;
 public class Program
 {
     public static void Main()
-    {;
-
+    {
         Console.WriteLine("found Indexes");
         int[] ints = FindAll(new object[] { 
             4,
@@ -348,7 +347,6 @@ public class Program
         private struct Empty
         {}
     }
-
 
 
     public static void WriteArray(object[] obj)
